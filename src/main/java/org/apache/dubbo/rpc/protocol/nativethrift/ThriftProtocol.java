@@ -21,8 +21,10 @@ import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.protocol.AbstractProxyProtocol;
 
 import org.apache.thrift.TException;
+import org.apache.thrift.TMultiplexedProcessor;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.protocol.TCompactProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadedSelectorServer;
@@ -32,6 +34,8 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * native thrift protocol
@@ -40,10 +44,13 @@ public class ThriftProtocol extends AbstractProxyProtocol {
 
     public static final int DEFAULT_PORT = 40880;
 
-    public static final String NAME = "thrift";
+    public static final String NAME = "nthrift";
     public static final String THRIFT_IFACE = "$Iface";
     public static final String THRIFT_PROCESSOR = "$Processor";
     public static final String THRIFT_CLIENT = "$Client";
+
+    private static final Map<String,TServer> serverMap = new HashMap<>();
+    private TMultiplexedProcessor processor = new TMultiplexedProcessor();
 
     @Override
     public int getDefaultPort() {
@@ -69,35 +76,43 @@ public class ThriftProtocol extends AbstractProxyProtocol {
     }
 
     private <T> Runnable exportThreadedSelectorServer(T impl, Class<T> type, URL url) throws RpcException {
-        TProcessor tprocessor;
+
         TThreadedSelectorServer.Args tArgs = null;
         String typeName = type.getName();
-        TNonblockingServerSocket transport;
+
+        TServer tserver = null;
         if (typeName.endsWith(THRIFT_IFACE)) {
             String processorClsName = typeName.substring(0, typeName.indexOf(THRIFT_IFACE)) + THRIFT_PROCESSOR;
             try {
                 Class<?> clazz = Class.forName(processorClsName);
                 Constructor constructor = clazz.getConstructor(type);
                 try {
-                    tprocessor = (TProcessor) constructor.newInstance(impl);
+                    TProcessor tprocessor = (TProcessor) constructor.newInstance(impl);
+                    processor.registerProcessor(typeName,tprocessor);
 
-                    /**Solve the problem of only 50 of the default number of concurrent connections*/
-                    TNonblockingServerSocket.NonblockingAbstractServerSocketArgs args = new TNonblockingServerSocket.NonblockingAbstractServerSocketArgs();
-                    /**1000 connections*/
-                    args.backlog(1000);
-                    args.port(url.getPort());
-                    /**timeout: 10s */
-                    args.clientTimeout(10000);
+                    tserver = serverMap.get(url.getAddress());
+                    if(tserver == null) {
 
-                    transport = new TNonblockingServerSocket(args);
+                        /**Solve the problem of only 50 of the default number of concurrent connections*/
+                        TNonblockingServerSocket.NonblockingAbstractServerSocketArgs args = new TNonblockingServerSocket.NonblockingAbstractServerSocketArgs();
+                        /**1000 connections*/
+                        args.backlog(1000);
+                        args.port(url.getPort());
+                        /**timeout: 10s */
+                        args.clientTimeout(10000);
 
-                    tArgs = new TThreadedSelectorServer.Args(transport);
-                    tArgs.workerThreads(200);
-                    tArgs.selectorThreads(4);
-                    tArgs.acceptQueueSizePerThread(256);
-                    tArgs.processor(tprocessor);
-                    tArgs.transportFactory(new TFramedTransport.Factory());
-                    tArgs.protocolFactory(new TCompactProtocol.Factory());
+                        TNonblockingServerSocket transport = new TNonblockingServerSocket(args);
+
+                        tArgs = new TThreadedSelectorServer.Args(transport);
+                        tArgs.workerThreads(200);
+                        tArgs.selectorThreads(4);
+                        tArgs.acceptQueueSizePerThread(256);
+                        tArgs.processor(processor);
+                        tArgs.transportFactory(new TFramedTransport.Factory());
+                        tArgs.protocolFactory(new TCompactProtocol.Factory());
+                    }else{
+                        return null; // if server is starting, return and do nothing here
+                    }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     throw new RpcException("Fail to create thrift server(" + url + ") : " + e.getMessage(), e);
@@ -108,11 +123,12 @@ public class ThriftProtocol extends AbstractProxyProtocol {
             }
         }
 
-        if (tArgs == null) {
+        if (tserver == null && tArgs == null) {
             logger.error("Fail to create thrift server(" + url + ") due to null args");
             throw new RpcException("Fail to create thrift server(" + url + ") due to null args");
         }
-        final TServer thriftServer = new TThreadedSelectorServer(tArgs);
+        final TServer thriftServer =  new TThreadedSelectorServer(tArgs);
+        serverMap.put(url.getAddress(),thriftServer);
 
         new Thread(new Runnable() {
 
@@ -140,9 +156,6 @@ public class ThriftProtocol extends AbstractProxyProtocol {
     private <T> T doReferFrameAndCompact(Class<T> type, URL url) throws RpcException {
 
         try {
-            TSocket tSocket;
-            TTransport transport;
-            TProtocol protocol;
             T thriftClient = null;
             String typeName = type.getName();
             if (typeName.endsWith(THRIFT_IFACE)) {
@@ -150,9 +163,10 @@ public class ThriftProtocol extends AbstractProxyProtocol {
                 Class<?> clazz = Class.forName(clientClsName);
                 Constructor constructor = clazz.getConstructor(TProtocol.class);
                 try {
-                    tSocket = new TSocket(url.getHost(), url.getPort());
-                    transport = new TFramedTransport(tSocket);
-                    protocol = new TCompactProtocol(transport);
+                    TSocket tSocket = new TSocket(url.getHost(), url.getPort());
+                    TTransport transport = new TFramedTransport(tSocket);
+                    TProtocol tprotocol = new TCompactProtocol(transport);
+                    TMultiplexedProtocol protocol = new TMultiplexedProtocol(tprotocol,typeName);
                     thriftClient = (T) constructor.newInstance(protocol);
                     transport.open();
                     logger.info("thrift client opened for service(" + url + ")");
