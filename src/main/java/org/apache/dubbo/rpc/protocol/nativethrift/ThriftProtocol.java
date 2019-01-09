@@ -34,6 +34,7 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
 import java.lang.reflect.Constructor;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,7 +98,7 @@ public class ThriftProtocol extends AbstractProxyProtocol {
                         TNonblockingServerSocket.NonblockingAbstractServerSocketArgs args = new TNonblockingServerSocket.NonblockingAbstractServerSocketArgs();
                         /**1000 connections*/
                         args.backlog(1000);
-                        args.port(url.getPort());
+                        args.bindAddr(new InetSocketAddress(url.getHost(), url.getPort()));
                         /**timeout: 10s */
                         args.clientTimeout(10000);
 
