@@ -7,3 +7,12 @@ You can via https://github.com/apache/incubator-dubbo-samples/tree/master/dubbo-
 [![Gitter](https://badges.gitter.im/alibaba/dubbo.svg)](https://gitter.im/alibaba/dubbo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 ![license](https://img.shields.io/github/license/dubbo/dubbo-rpc-native-thrift.svg)
 ![maven](https://img.shields.io/maven-central/v/org.apache.dubb/dubbo-rpc-native-thrift.svg)
+
+The newest vsersion is :
+`xml
+<dependency>
+    <groupId>org.apache.dubbo</groupId>
+    <artifactId>dubbo-registry-etcd3</artifactId>
+    <version>2.7.0-SNAPSHOT</version>
+</dependency>
+`
