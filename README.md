@@ -12,7 +12,7 @@ The newest vsersion is :
 ```xml
 <dependency>
     <groupId>org.apache.dubbo</groupId>
-    <artifactId>dubbo-registry-etcd3</artifactId>
-    <version>2.7.0-SNAPSHOT</version>
+    <artifactId>dubbo-rpc-native-thrift</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
