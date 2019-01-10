@@ -1,6 +1,6 @@
 # dubbo-rpc-native-thrift
 Dubbo rpc extension for native thrift
-You can via https://github.com/apache/incubator-dubbo-samples/tree/master/dubbo-samples-thrift to find the integration usage 
+You can via the [dubbo-samples-thrift](https://github.com/apache/incubator-dubbo-samples/tree/master/dubbo-samples-thrift) to find the integration usage 
  
 [![Build Status](https://travis-ci.org/dubbo/dubbo-rpc-native-thrift.svg?branch=master)](https://travis-ci.org/dubbo/dubbo-rpc-native-thrift) 
 [![codecov](https://codecov.io/gh/dubbo/dubbo-rpc-native-thrift/branch/master/graph/badge.svg)](https://codecov.io/gh/dubbo/dubbo-rpc-native-thrift)
