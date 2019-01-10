@@ -9,10 +9,10 @@ You can via https://github.com/apache/incubator-dubbo-samples/tree/master/dubbo-
 ![maven](https://img.shields.io/maven-central/v/org.apache.dubb/dubbo-rpc-native-thrift.svg)
 
 The newest vsersion is :
-`xml
+```xml
 <dependency>
     <groupId>org.apache.dubbo</groupId>
     <artifactId>dubbo-registry-etcd3</artifactId>
     <version>2.7.0-SNAPSHOT</version>
 </dependency>
-`
+```
