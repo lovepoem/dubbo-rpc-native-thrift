@@ -17,21 +17,21 @@
 package org.apache.dubbo.rpc.protocol.nativethrift;
 
 
-import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.common.beanutil.JavaBeanDescriptor;
-import com.alibaba.dubbo.common.beanutil.JavaBeanSerializeUtil;
-import com.alibaba.dubbo.common.extension.ExtensionLoader;
-import com.alibaba.dubbo.common.serialize.ObjectInput;
-import com.alibaba.dubbo.common.serialize.ObjectOutput;
-import com.alibaba.dubbo.common.serialize.Serialization;
-import com.alibaba.dubbo.common.serialize.nativejava.NativeJavaSerialization;
-import com.alibaba.dubbo.rpc.Exporter;
-import com.alibaba.dubbo.rpc.Invoker;
-import com.alibaba.dubbo.rpc.Protocol;
-import com.alibaba.dubbo.rpc.ProxyFactory;
-import com.alibaba.dubbo.rpc.RpcContext;
-import com.alibaba.dubbo.rpc.RpcException;
-import com.alibaba.dubbo.rpc.service.GenericService;
+import org.apache.dubbo.common.URL;
+import org.apache.dubbo.common.beanutil.JavaBeanDescriptor;
+import org.apache.dubbo.common.beanutil.JavaBeanSerializeUtil;
+import org.apache.dubbo.common.extension.ExtensionLoader;
+import org.apache.dubbo.common.serialize.ObjectInput;
+import org.apache.dubbo.common.serialize.ObjectOutput;
+import org.apache.dubbo.common.serialize.Serialization;
+import org.apache.dubbo.common.serialize.nativejava.NativeJavaSerialization;
+import org.apache.dubbo.rpc.Exporter;
+import org.apache.dubbo.rpc.Invoker;
+import org.apache.dubbo.rpc.Protocol;
+import org.apache.dubbo.rpc.ProxyFactory;
+import org.apache.dubbo.rpc.RpcContext;
+import org.apache.dubbo.rpc.RpcException;
+import org.apache.dubbo.rpc.service.GenericService;
 
 import org.apache.thrift.TException;
 import org.junit.Assert;
