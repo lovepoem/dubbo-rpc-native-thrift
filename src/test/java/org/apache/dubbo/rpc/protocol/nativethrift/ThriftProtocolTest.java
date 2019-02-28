@@ -17,21 +17,21 @@
 package org.apache.dubbo.rpc.protocol.nativethrift;
 
 
-import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.common.beanutil.JavaBeanDescriptor;
-import com.alibaba.dubbo.common.beanutil.JavaBeanSerializeUtil;
-import com.alibaba.dubbo.common.extension.ExtensionLoader;
-import com.alibaba.dubbo.common.serialize.ObjectInput;
-import com.alibaba.dubbo.common.serialize.ObjectOutput;
-import com.alibaba.dubbo.common.serialize.Serialization;
-import com.alibaba.dubbo.common.serialize.nativejava.NativeJavaSerialization;
-import com.alibaba.dubbo.rpc.Exporter;
-import com.alibaba.dubbo.rpc.Invoker;
-import com.alibaba.dubbo.rpc.Protocol;
-import com.alibaba.dubbo.rpc.ProxyFactory;
-import com.alibaba.dubbo.rpc.RpcContext;
-import com.alibaba.dubbo.rpc.RpcException;
-import com.alibaba.dubbo.rpc.service.GenericService;
+import org.apache.dubbo.common.URL;
+import org.apache.dubbo.common.beanutil.JavaBeanDescriptor;
+import org.apache.dubbo.common.beanutil.JavaBeanSerializeUtil;
+import org.apache.dubbo.common.extension.ExtensionLoader;
+import org.apache.dubbo.common.serialize.ObjectInput;
+import org.apache.dubbo.common.serialize.ObjectOutput;
+import org.apache.dubbo.common.serialize.Serialization;
+import org.apache.dubbo.common.serialize.nativejava.NativeJavaSerialization;
+import org.apache.dubbo.rpc.Exporter;
+import org.apache.dubbo.rpc.Invoker;
+import org.apache.dubbo.rpc.Protocol;
+import org.apache.dubbo.rpc.ProxyFactory;
+import org.apache.dubbo.rpc.RpcContext;
+import org.apache.dubbo.rpc.RpcException;
+import org.apache.dubbo.rpc.service.GenericService;
 
 import org.apache.thrift.TException;
 import org.junit.Assert;
@@ -50,7 +50,7 @@ import static org.junit.Assert.fail;
 public class ThriftProtocolTest {
 
     @Test
-    public void testThriftProtocol() throws TException{
+    public void testThriftProtocol() throws TException {
         DemoServiceImpl server = new DemoServiceImpl();
         ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
         Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
@@ -66,7 +66,7 @@ public class ThriftProtocolTest {
     }
 
     @Test
-    public void testThriftProtocolMultipleServices() throws TException{
+    public void testThriftProtocolMultipleServices() throws TException {
 
         ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
         Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
@@ -96,7 +96,7 @@ public class ThriftProtocolTest {
 
     @Ignore
     @Test
-    public void testGenericInvoke() throws TException{
+    public void testGenericInvoke() throws TException {
         DemoServiceImpl server = new DemoServiceImpl();
         Assert.assertFalse(server.isCalled());
         ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
@@ -142,7 +142,7 @@ public class ThriftProtocolTest {
 
     @Ignore
     @Test
-    public void testGenericInvokeWithRpcContext() throws TException{
+    public void testGenericInvokeWithRpcContext() throws TException {
         RpcContext.getContext().setAttachment("myContext", "123");
 
         DemoServiceImpl server = new DemoServiceImpl();
@@ -181,7 +181,7 @@ public class ThriftProtocolTest {
 
     @Ignore
     @Test
-    public void testOverload() throws TException{
+    public void testOverload() throws TException {
         DemoServiceImpl server = new DemoServiceImpl();
         Assert.assertFalse(server.isCalled());
         ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
@@ -200,7 +200,7 @@ public class ThriftProtocolTest {
 
     @Ignore
     @Test
-    public void testTimeOut() throws TException{
+    public void testTimeOut() throws TException {
         DemoServiceImpl server = new DemoServiceImpl();
         ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
         Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
@@ -222,7 +222,7 @@ public class ThriftProtocolTest {
 
     @Ignore
     @Test
-    public void testCustomException() throws TException{
+    public void testCustomException() throws TException {
         DemoServiceImpl server = new DemoServiceImpl();
         ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
         Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();

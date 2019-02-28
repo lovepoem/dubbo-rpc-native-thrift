@@ -16,9 +16,9 @@
  */
 package org.apache.dubbo.rpc.protocol.nativethrift;
 
-import com.alibaba.dubbo.common.URL;
-import com.alibaba.dubbo.rpc.RpcException;
-import com.alibaba.dubbo.rpc.protocol.AbstractProxyProtocol;
+import org.apache.dubbo.common.URL;
+import org.apache.dubbo.rpc.RpcException;
+import org.apache.dubbo.rpc.protocol.AbstractProxyProtocol;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.TMultiplexedProcessor;
@@ -50,7 +50,7 @@ public class ThriftProtocol extends AbstractProxyProtocol {
     public static final String THRIFT_PROCESSOR = "$Processor";
     public static final String THRIFT_CLIENT = "$Client";
 
-    private static final Map<String,TServer> serverMap = new HashMap<>();
+    private static final Map<String, TServer> serverMap = new HashMap<>();
     private TMultiplexedProcessor processor = new TMultiplexedProcessor();
 
     @Override
@@ -62,18 +62,18 @@ public class ThriftProtocol extends AbstractProxyProtocol {
         super(TException.class, RpcException.class);
     }
 
+    public ThriftProtocol(Class<?>... exceptions) {
+        super(exceptions);
+    }
+
     @Override
-    protected <T> Runnable doExport(T impl, Class<T> type, URL url) throws RpcException {
+    protected <T> Runnable doExport(T impl, Class<T> type, org.apache.dubbo.common.URL url) throws org.apache.dubbo.rpc.RpcException {
         return exportThreadedSelectorServer(impl, type, url);
     }
 
     @Override
-    protected <T> T doRefer(Class<T> type, URL url) throws RpcException {
+    protected <T> T doRefer(Class<T> type, org.apache.dubbo.common.URL url) throws org.apache.dubbo.rpc.RpcException {
         return doReferFrameAndCompact(type, url);
-    }
-
-    public ThriftProtocol(Class<?>... exceptions) {
-        super(exceptions);
     }
 
     private <T> Runnable exportThreadedSelectorServer(T impl, Class<T> type, URL url) throws RpcException {
@@ -89,10 +89,10 @@ public class ThriftProtocol extends AbstractProxyProtocol {
                 Constructor constructor = clazz.getConstructor(type);
                 try {
                     TProcessor tprocessor = (TProcessor) constructor.newInstance(impl);
-                    processor.registerProcessor(typeName,tprocessor);
+                    processor.registerProcessor(typeName, tprocessor);
 
                     tserver = serverMap.get(url.getAddress());
-                    if(tserver == null) {
+                    if (tserver == null) {
 
                         /**Solve the problem of only 50 of the default number of concurrent connections*/
                         TNonblockingServerSocket.NonblockingAbstractServerSocketArgs args = new TNonblockingServerSocket.NonblockingAbstractServerSocketArgs();
@@ -111,7 +111,7 @@ public class ThriftProtocol extends AbstractProxyProtocol {
                         tArgs.processor(processor);
                         tArgs.transportFactory(new TFramedTransport.Factory());
                         tArgs.protocolFactory(new TCompactProtocol.Factory());
-                    }else{
+                    } else {
                         return null; // if server is starting, return and do nothing here
                     }
                 } catch (Exception e) {
@@ -128,8 +128,8 @@ public class ThriftProtocol extends AbstractProxyProtocol {
             logger.error("Fail to create thrift server(" + url + ") due to null args");
             throw new RpcException("Fail to create thrift server(" + url + ") due to null args");
         }
-        final TServer thriftServer =  new TThreadedSelectorServer(tArgs);
-        serverMap.put(url.getAddress(),thriftServer);
+        final TServer thriftServer = new TThreadedSelectorServer(tArgs);
+        serverMap.put(url.getAddress(), thriftServer);
 
         new Thread(new Runnable() {
 
@@ -167,7 +167,7 @@ public class ThriftProtocol extends AbstractProxyProtocol {
                     TSocket tSocket = new TSocket(url.getHost(), url.getPort());
                     TTransport transport = new TFramedTransport(tSocket);
                     TProtocol tprotocol = new TCompactProtocol(transport);
-                    TMultiplexedProtocol protocol = new TMultiplexedProtocol(tprotocol,typeName);
+                    TMultiplexedProtocol protocol = new TMultiplexedProtocol(tprotocol, typeName);
                     thriftClient = (T) constructor.newInstance(protocol);
                     transport.open();
                     logger.info("thrift client opened for service(" + url + ")");
